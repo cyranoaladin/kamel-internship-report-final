@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://kamel-internship-report.vercel.app/sitemap.xml
+
+# Disallow sensitive areas
+Disallow: /api/
+Disallow: /_next/
+Disallow: /admin/
+
+# Allow documentation
+Allow: /docs/
+
+# Crawl delay
+Crawl-delay: 1
+

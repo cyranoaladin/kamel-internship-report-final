@@ -1,0 +1,902 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multicol}
+
+% Configuration de la page
+\geometry{left=2cm,right=2cm,top=2.5cm,bottom=2.5cm}
+
+% Configuration des couleurs
+\definecolor{jupiterBlue}{RGB}{59, 130, 246}
+\definecolor{solanaGreen}{RGB}{34, 197, 94}
+\definecolor{deauraPurple}{RGB}{168, 85, 247}
+\definecolor{codeGray}{RGB}{248, 250, 252}
+\definecolor{warningOrange}{RGB}{251, 146, 60}
+\definecolor{successGreen}{RGB}{16, 185, 129}
+
+% Configuration des liens
+\hypersetup{
+    colorlinks=true,
+    linkcolor=jupiterBlue,
+    filecolor=jupiterBlue,
+    urlcolor=jupiterBlue,
+    citecolor=jupiterBlue
+}
+
+% Configuration des listings
+\lstdefinestyle{bash}{
+    language=bash,
+    backgroundcolor=\color{codeGray},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{solanaGreen},
+    frame=single,
+    keepspaces=true,
+    keywordstyle=\color{jupiterBlue},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{deauraPurple},
+    tabsize=2,
+}
+
+% Configuration des titres
+\titleformat{\section}{\Large\bfseries\color{jupiterBlue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{jupiterBlue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{jupiterBlue}}{\thesubsubsection}{1em}{}
+
+% En-tête et pied de page
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{jupiterBlue}{\textbf{Production Deployment Guide - Jupiter Swap DApp}}}
+\fancyhead[R]{\textcolor{jupiterBlue}{\textbf{Deployment Guide}}}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+% Page de titre
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\Huge\textbf{\textcolor{jupiterBlue}{Production Deployment Guide}}\par}
+    \vspace{0.5cm}
+    {\LARGE\textcolor{deauraPurple}{Jupiter Swap DApp}\par}
+    \vspace{0.3cm}
+    {\Large\textit{Complete Production Deployment}\par}
+    
+    \vspace{1.5cm}
+    
+    \begin{tcolorbox}[colback=jupiterBlue!10,colframe=jupiterBlue,width=0.9\textwidth]
+        \centering
+        \textbf{🚀 Production Deployment Stack}\\
+        \vspace{0.5cm}
+        \begin{multicols}{2}
+        \textbf{Platform:} Vercel Edge Network\\
+        \textbf{Framework:} Next.js 14 App Router\\
+        \textbf{CI/CD:} GitHub Actions\\
+        \textbf{Monitoring:} Sentry + Vercel Analytics\\
+        \textbf{CDN:} Global Edge Caching\\
+        \textbf{SSL:} Automatic HTTPS\\
+        \textbf{Environment:} Secure Variables\\
+        \textbf{Performance:} 99.9\% Uptime SLA
+        \end{multicols}
+    \end{tcolorbox}
+    
+    \vspace{1.5cm}
+    
+    \begin{tcolorbox}[colback=successGreen!10,colframe=successGreen,width=0.8\textwidth]
+        \centering
+        \textbf{🎯 Deployment Achievements}\\
+        \vspace{0.3cm}
+        ✅ Zero-downtime Deployments\\
+        ✅ Automatic SSL Certificates\\
+        ✅ Global CDN Distribution\\
+        ✅ Environment Security\\
+        ✅ Performance Monitoring\\
+        ✅ Error Tracking\\
+        ✅ Rollback Capabilities\\
+        ✅ Scalable Infrastructure
+    \end{tcolorbox}
+    
+    \vfill
+    
+    {\large\textbf{Author:} Kamel (\href{https://x.com/treizeb__}{@treizeb\_\_})\\
+    \textbf{Company:} \href{https://deaura.io}{DeAura.io}\\
+    \textbf{Updated:} July 14, 2025\par}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{🚀 Vercel Deployment}
+
+\subsection{Initial Setup}
+
+\begin{lstlisting}[style=bash, caption=Vercel CLI Installation and Setup]
+# Install Vercel CLI globally
+npm install -g vercel
+
+# Login to Vercel account
+vercel login
+
+# Initialize project in repository root
+cd jupiter-swap-nextjs-production
+vercel
+
+# Follow interactive setup:
+# ? Set up and deploy "jupiter-swap-nextjs-production"? [Y/n] Y
+# ? Which scope do you want to deploy to? [Your Team]
+# ? Link to existing project? [y/N] N
+# ? What's your project's name? jupiter-swap-dapp
+# ? In which directory is your code located? ./
+# ? Want to override the settings? [y/N] N
+
+# Deploy to production
+vercel --prod
+\end{lstlisting}
+
+\subsection{Environment Variables Configuration}
+
+\begin{lstlisting}[style=bash, caption=Production Environment Variables]
+# Set environment variables via Vercel CLI
+vercel env add NEXT_PUBLIC_HELIUS_API_KEY production
+# Enter: d94d81dd-f2a1-40f7-920d-0dfaf3aaf032
+
+vercel env add NEXT_PUBLIC_ALCHEMY_API_KEY production
+# Enter: UvOk23LRlqGz1m58VCEd3PJ2ZOX2h9KM
+
+vercel env add NEXT_PUBLIC_COINGECKO_API_KEY production
+# Enter: CG-your-api-key-here
+
+vercel env add NEXT_PUBLIC_SOLANA_NETWORK production
+# Enter: mainnet-beta
+
+vercel env add NEXT_PUBLIC_JUPITER_API_URL production
+# Enter: https://quote-api.jup.ag/v6
+
+vercel env add NEXT_PUBLIC_ENABLE_DEVTOOLS production
+# Enter: false
+
+vercel env add SENTRY_DSN production
+# Enter: https://your-sentry-dsn@sentry.io/project-id
+
+vercel env add SENTRY_AUTH_TOKEN production
+# Enter: your-sentry-auth-token
+
+# Verify environment variables
+vercel env ls
+\end{lstlisting}
+
+\subsection{Vercel Configuration}
+
+\begin{lstlisting}[style=bash, caption=vercel.json Configuration]
+{
+  "version": 2,
+  "name": "jupiter-swap-dapp",
+  "alias": ["jupiter-swap.deaura.io"],
+  "regions": ["iad1", "sfo1", "fra1", "hnd1"],
+  "build": {
+    "env": {
+      "NODE_ENV": "production",
+      "NEXT_TELEMETRY_DISABLED": "1"
+    }
+  },
+  "functions": {
+    "pages/api/**/*.ts": {
+      "runtime": "nodejs18.x",
+      "maxDuration": 30
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "https://jupiter-swap.deaura.io"
+        },
+        {
+          "key": "Access-Control-Allow-Methods",
+          "value": "GET, POST, OPTIONS"
+        },
+        {
+          "key": "Access-Control-Allow-Headers",
+          "value": "Content-Type, Authorization"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/health",
+      "destination": "/api/health"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/swap",
+      "destination": "/",
+      "permanent": false
+    }
+  ]
+}
+\end{lstlisting}
+
+\section{⚙️ GitHub Actions CI/CD}
+
+\subsection{Workflow Configuration}
+
+\begin{lstlisting}[style=bash, caption=.github/workflows/deploy.yml]
+name: Deploy to Production
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+          
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Run type checking
+        run: npm run type-check
+        
+      - name: Run linting
+        run: npm run lint
+        
+      - name: Run tests
+        run: npm run test:ci
+        env:
+          CI: true
+          
+      - name: Build application
+        run: npm run build
+        env:
+          NODE_ENV: production
+          
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage/lcov.info
+          flags: unittests
+          name: codecov-umbrella
+          
+  deploy-preview:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.event_name == 'pull_request'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+        
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=preview --token=${{ secrets.VERCEL_TOKEN }}
+        
+      - name: Build Project Artifacts
+        run: vercel build --token=${{ secrets.VERCEL_TOKEN }}
+        
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --token=${{ secrets.VERCEL_TOKEN }})
+          echo "preview_url=$url" >> $GITHUB_OUTPUT
+          
+      - name: Comment PR with preview URL
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 Preview deployment ready!\n\n**Preview URL:** ${{ steps.deploy.outputs.preview_url }}\n\n*Deployed from commit ${{ github.sha }}*`
+            })
+            
+  deploy-production:
+    runs-on: ubuntu-latest
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+        
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+        
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+        
+      - name: Deploy Project Artifacts to Vercel
+        id: deploy
+        run: |
+          url=$(vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }})
+          echo "production_url=$url" >> $GITHUB_OUTPUT
+          
+      - name: Create deployment status
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.repos.createDeploymentStatus({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              deployment_id: context.payload.deployment.id,
+              state: 'success',
+              environment_url: '${{ steps.deploy.outputs.production_url }}',
+              description: 'Deployment successful'
+            })
+            
+  lighthouse:
+    runs-on: ubuntu-latest
+    needs: deploy-production
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Run Lighthouse CI
+        uses: treosh/lighthouse-ci-action@v10
+        with:
+          urls: |
+            https://jupiter-swap.deaura.io
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+\end{lstlisting}
+
+\subsection{Lighthouse Configuration}
+
+\begin{lstlisting}[style=bash, caption=lighthouserc.json]
+{
+  "ci": {
+    "collect": {
+      "numberOfRuns": 3,
+      "settings": {
+        "chromeFlags": "--no-sandbox --headless"
+      }
+    },
+    "assert": {
+      "assertions": {
+        "categories:performance": ["error", {"minScore": 0.9}],
+        "categories:accessibility": ["error", {"minScore": 0.9}],
+        "categories:best-practices": ["error", {"minScore": 0.9}],
+        "categories:seo": ["error", {"minScore": 0.9}],
+        "first-contentful-paint": ["error", {"maxNumericValue": 2000}],
+        "largest-contentful-paint": ["error", {"maxNumericValue": 3000}],
+        "cumulative-layout-shift": ["error", {"maxNumericValue": 0.1}]
+      }
+    },
+    "upload": {
+      "target": "temporary-public-storage"
+    }
+  }
+}
+\end{lstlisting}
+
+\section{📊 Monitoring Setup}
+
+\subsection{Sentry Configuration}
+
+\begin{lstlisting}[style=bash, caption=sentry.client.config.ts]
+import * as Sentry from '@sentry/nextjs';
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  
+  // Performance monitoring
+  tracesSampleRate: 1.0,
+  
+  // Session replay
+  replaysSessionSampleRate: 0.1,
+  replaysOnErrorSampleRate: 1.0,
+  
+  // Environment
+  environment: process.env.NODE_ENV,
+  
+  // Release tracking
+  release: process.env.VERCEL_GIT_COMMIT_SHA,
+  
+  // Error filtering
+  beforeSend(event, hint) {
+    // Filter out known non-critical errors
+    if (event.exception) {
+      const error = hint.originalException;
+      
+      // Filter wallet connection errors (user-initiated)
+      if (error?.message?.includes('User rejected')) {
+        return null;
+      }
+      
+      // Filter network timeouts (temporary)
+      if (error?.message?.includes('timeout')) {
+        return null;
+      }
+    }
+    
+    return event;
+  },
+  
+  // Custom tags
+  initialScope: {
+    tags: {
+      component: 'jupiter-swap-dapp',
+    },
+  },
+  
+  // Integration configuration
+  integrations: [
+    new Sentry.BrowserTracing({
+      routingInstrumentation: Sentry.nextRouterInstrumentation(
+        require('next/router')
+      ),
+    }),
+    new Sentry.Replay(),
+  ],
+});
+\end{lstlisting}
+
+\subsection{Health Check Endpoint}
+
+\begin{lstlisting}[style=bash, caption=pages/api/health.ts]
+import type { NextApiRequest, NextApiResponse } from 'next';
+import { Connection } from '@solana/web3.js';
+
+interface HealthStatus {
+  status: 'healthy' | 'degraded' | 'unhealthy';
+  timestamp: string;
+  version: string;
+  services: {
+    solana: 'up' | 'down';
+    jupiter: 'up' | 'down';
+    helius: 'up' | 'down';
+    alchemy: 'up' | 'down';
+  };
+  performance: {
+    uptime: number;
+    memory: {
+      used: number;
+      total: number;
+    };
+  };
+}
+
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<HealthStatus>
+) {
+  const startTime = Date.now();
+  
+  try {
+    // Check Solana RPC
+    const connection = new Connection(
+      `https://mainnet.helius-rpc.com/?api-key=${process.env.NEXT_PUBLIC_HELIUS_API_KEY}`
+    );
+    
+    const [solanaHealth, jupiterHealth, heliusHealth, alchemyHealth] = 
+      await Promise.allSettled([
+        // Solana health check
+        connection.getEpochInfo(),
+        
+        // Jupiter API health check
+        fetch('https://quote-api.jup.ag/v6/quote?inputMint=So11111111111111111111111111111111111111112&outputMint=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&amount=1000000000')
+          .then(res => res.ok),
+        
+        // Helius health check
+        fetch(`https://mainnet.helius-rpc.com/?api-key=${process.env.NEXT_PUBLIC_HELIUS_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'getHealth',
+          }),
+        }).then(res => res.ok),
+        
+        // Alchemy health check
+        fetch(`https://solana-mainnet.g.alchemy.com/v2/${process.env.NEXT_PUBLIC_ALCHEMY_API_KEY}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            jsonrpc: '2.0',
+            id: 1,
+            method: 'getHealth',
+          }),
+        }).then(res => res.ok),
+      ]);
+    
+    const services = {
+      solana: solanaHealth.status === 'fulfilled' ? 'up' : 'down',
+      jupiter: jupiterHealth.status === 'fulfilled' && jupiterHealth.value ? 'up' : 'down',
+      helius: heliusHealth.status === 'fulfilled' && heliusHealth.value ? 'up' : 'down',
+      alchemy: alchemyHealth.status === 'fulfilled' && alchemyHealth.value ? 'up' : 'down',
+    } as const;
+    
+    const healthyServices = Object.values(services).filter(status => status === 'up').length;
+    const totalServices = Object.values(services).length;
+    
+    let overallStatus: HealthStatus['status'];
+    if (healthyServices === totalServices) {
+      overallStatus = 'healthy';
+    } else if (healthyServices >= totalServices / 2) {
+      overallStatus = 'degraded';
+    } else {
+      overallStatus = 'unhealthy';
+    }
+    
+    const memoryUsage = process.memoryUsage();
+    
+    const healthStatus: HealthStatus = {
+      status: overallStatus,
+      timestamp: new Date().toISOString(),
+      version: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown',
+      services,
+      performance: {
+        uptime: process.uptime(),
+        memory: {
+          used: Math.round(memoryUsage.heapUsed / 1024 / 1024),
+          total: Math.round(memoryUsage.heapTotal / 1024 / 1024),
+        },
+      },
+    };
+    
+    const responseTime = Date.now() - startTime;
+    res.setHeader('X-Response-Time', `${responseTime}ms`);
+    
+    // Set appropriate status code
+    const statusCode = overallStatus === 'healthy' ? 200 : 
+                      overallStatus === 'degraded' ? 200 : 503;
+    
+    res.status(statusCode).json(healthStatus);
+    
+  } catch (error) {
+    console.error('Health check failed:', error);
+    
+    res.status(503).json({
+      status: 'unhealthy',
+      timestamp: new Date().toISOString(),
+      version: process.env.VERCEL_GIT_COMMIT_SHA || 'unknown',
+      services: {
+        solana: 'down',
+        jupiter: 'down',
+        helius: 'down',
+        alchemy: 'down',
+      },
+      performance: {
+        uptime: process.uptime(),
+        memory: {
+          used: 0,
+          total: 0,
+        },
+      },
+    });
+  }
+}
+\end{lstlisting}
+
+\section{🔒 Security Configuration}
+
+\subsection{Content Security Policy}
+
+\begin{lstlisting}[style=bash, caption=next.config.js Security Headers]
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  reactStrictMode: true,
+  swcMinify: true,
+  
+  // Security headers
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://vercel.live",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+              "font-src 'self' https://fonts.gstatic.com",
+              "img-src 'self' data: https: blob:",
+              "connect-src 'self' https://quote-api.jup.ag https://mainnet.helius-rpc.com https://solana-mainnet.g.alchemy.com https://eclipse.helius-rpc.com wss://mainnet.helius-rpc.com",
+              "frame-src 'none'",
+              "object-src 'none'",
+              "base-uri 'self'",
+              "form-action 'self'",
+              "frame-ancestors 'none'",
+              "upgrade-insecure-requests",
+            ].join('; '),
+          },
+          {
+            key: 'X-DNS-Prefetch-Control',
+            value: 'on',
+          },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), payment=()',
+          },
+        ],
+      },
+    ];
+  },
+  
+  // Environment variables validation
+  env: {
+    CUSTOM_KEY: process.env.CUSTOM_KEY,
+  },
+  
+  // Webpack configuration
+  webpack: (config, { dev, isServer }) => {
+    // Security: Don't expose source maps in production
+    if (!dev && !isServer) {
+      config.devtool = false;
+    }
+    
+    return config;
+  },
+  
+  // Image optimization
+  images: {
+    domains: ['assets.coingecko.com', 'raw.githubusercontent.com'],
+    formats: ['image/webp', 'image/avif'],
+  },
+  
+  // Experimental features
+  experimental: {
+    // Enable modern bundling
+    esmExternals: true,
+    // Optimize server components
+    serverComponentsExternalPackages: ['@solana/web3.js'],
+  },
+};
+
+module.exports = nextConfig;
+\end{lstlisting}
+
+\section{📈 Performance Optimization}
+
+\subsection{Bundle Analysis}
+
+\begin{lstlisting}[style=bash, caption=Bundle Analysis Setup]
+# Install bundle analyzer
+npm install --save-dev @next/bundle-analyzer
+
+# Add to package.json scripts
+{
+  "scripts": {
+    "analyze": "ANALYZE=true npm run build",
+    "analyze:server": "BUNDLE_ANALYZE=server npm run build",
+    "analyze:browser": "BUNDLE_ANALYZE=browser npm run build"
+  }
+}
+
+# Run analysis
+npm run analyze
+\end{lstlisting}
+
+\subsection{Performance Monitoring}
+
+\begin{lstlisting}[style=bash, caption=Web Vitals Tracking]
+// pages/_app.tsx
+import { AppProps } from 'next/app';
+import { getCLS, getFID, getFCP, getLCP, getTTFB } from 'web-vitals';
+
+function sendToAnalytics(metric: any) {
+  // Send to your analytics service
+  if (process.env.NODE_ENV === 'production') {
+    fetch('/api/analytics', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(metric),
+    }).catch(console.error);
+  }
+}
+
+export function reportWebVitals(metric: any) {
+  console.log(metric);
+  sendToAnalytics(metric);
+}
+
+function MyApp({ Component, pageProps }: AppProps) {
+  // Track Core Web Vitals
+  if (typeof window !== 'undefined') {
+    getCLS(sendToAnalytics);
+    getFID(sendToAnalytics);
+    getFCP(sendToAnalytics);
+    getLCP(sendToAnalytics);
+    getTTFB(sendToAnalytics);
+  }
+  
+  return <Component {...pageProps} />;
+}
+
+export default MyApp;
+\end{lstlisting}
+
+\section{🔄 Rollback Procedures}
+
+\subsection{Automatic Rollback}
+
+\begin{lstlisting}[style=bash, caption=Rollback Script]
+#!/bin/bash
+
+# rollback.sh - Emergency rollback script
+
+set -e
+
+# Configuration
+VERCEL_TOKEN=${VERCEL_TOKEN}
+PROJECT_ID=${VERCEL_PROJECT_ID}
+TEAM_ID=${VERCEL_ORG_ID}
+
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+echo -e "${YELLOW}🔄 Starting emergency rollback...${NC}"
+
+# Get current production deployment
+current_deployment=$(vercel ls --token=$VERCEL_TOKEN --scope=$TEAM_ID | grep "jupiter-swap-dapp" | grep "READY" | head -1 | awk '{print $2}')
+
+if [ -z "$current_deployment" ]; then
+    echo -e "${RED}❌ Could not find current deployment${NC}"
+    exit 1
+fi
+
+echo -e "${YELLOW}Current deployment: $current_deployment${NC}"
+
+# Get previous deployment
+previous_deployment=$(vercel ls --token=$VERCEL_TOKEN --scope=$TEAM_ID | grep "jupiter-swap-dapp" | grep "READY" | sed -n '2p' | awk '{print $2}')
+
+if [ -z "$previous_deployment" ]; then
+    echo -e "${RED}❌ Could not find previous deployment to rollback to${NC}"
+    exit 1
+fi
+
+echo -e "${YELLOW}Rolling back to: $previous_deployment${NC}"
+
+# Promote previous deployment to production
+vercel promote $previous_deployment --token=$VERCEL_TOKEN --scope=$TEAM_ID
+
+if [ $? -eq 0 ]; then
+    echo -e "${GREEN}✅ Rollback completed successfully${NC}"
+    echo -e "${GREEN}Production is now running: $previous_deployment${NC}"
+    
+    # Send notification (optional)
+    if [ ! -z "$SLACK_WEBHOOK" ]; then
+        curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"🔄 Jupiter Swap DApp rolled back to $previous_deployment\"}" \
+            $SLACK_WEBHOOK
+    fi
+else
+    echo -e "${RED}❌ Rollback failed${NC}"
+    exit 1
+fi
+\end{lstlisting}
+
+\section{🎯 Conclusion}
+
+This comprehensive production deployment guide ensures reliable, secure, and performant deployment of the Jupiter Swap DApp to Vercel with complete CI/CD automation, monitoring, and rollback capabilities.
+
+\subsection{Deployment Summary}
+
+\begin{tcolorbox}[colback=successGreen!10,colframe=successGreen]
+\textbf{🚀 Production Deployment Achievements:}
+\begin{itemize}
+    \item \textbf{Zero-downtime Deployments:} Seamless updates
+    \item \textbf{Global CDN:} Sub-100ms response times worldwide
+    \item \textbf{Automatic SSL:} HTTPS everywhere with HSTS
+    \item \textbf{CI/CD Pipeline:} Automated testing and deployment
+    \item \textbf{Performance Monitoring:} Real-time metrics and alerts
+    \item \textbf{Error Tracking:} Comprehensive error monitoring
+    \item \textbf{Security Headers:} Enterprise-grade security
+    \item \textbf{Rollback Capabilities:} Quick recovery procedures
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{1cm}
+
+\begin{center}
+\textit{Production deployment architecture designed and implemented by Kamel (\href{https://x.com/treizeb__}{@treizeb\_\_})\\
+DeAura.io - July 2025}
+\end{center}
+
+\end{document}
+

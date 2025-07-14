@@ -1,0 +1,1658 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[english]{babel}
+\usepackage{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{tcolorbox}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{multicol}
+
+% Configuration de la page
+\geometry{left=2cm,right=2cm,top=2.5cm,bottom=2.5cm}
+
+% Configuration des couleurs
+\definecolor{jupiterBlue}{RGB}{59, 130, 246}
+\definecolor{solanaGreen}{RGB}{34, 197, 94}
+\definecolor{deauraPurple}{RGB}{168, 85, 247}
+\definecolor{codeGray}{RGB}{248, 250, 252}
+\definecolor{warningOrange}{RGB}{251, 146, 60}
+\definecolor{errorRed}{RGB}{239, 68, 68}
+\definecolor{successGreen}{RGB}{16, 185, 129}
+
+% Configuration des liens
+\hypersetup{
+    colorlinks=true,
+    linkcolor=jupiterBlue,
+    filecolor=jupiterBlue,
+    urlcolor=jupiterBlue,
+    citecolor=jupiterBlue
+}
+
+% Configuration des listings
+\lstdefinestyle{typescript}{
+    language=JavaScript,
+    backgroundcolor=\color{codeGray},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    commentstyle=\color{solanaGreen},
+    deletekeywords={...},
+    escapeinside={\%*}{*)},
+    extendedchars=true,
+    frame=single,
+    keepspaces=true,
+    keywordstyle=\color{jupiterBlue},
+    morekeywords={interface,type,const,let,async,await,export,import,from,as,extends,implements},
+    numbers=left,
+    numbersep=5pt,
+    numberstyle=\tiny\color{gray},
+    rulecolor=\color{black},
+    showspaces=false,
+    showstringspaces=false,
+    showtabs=false,
+    stepnumber=1,
+    stringstyle=\color{deauraPurple},
+    tabsize=2,
+    title=\lstname
+}
+
+% Configuration des titres
+\titleformat{\section}{\Large\bfseries\color{jupiterBlue}}{\thesection}{1em}{}
+\titleformat{\subsection}{\large\bfseries\color{jupiterBlue}}{\thesubsection}{1em}{}
+\titleformat{\subsubsection}{\normalsize\bfseries\color{jupiterBlue}}{\thesubsubsection}{1em}{}
+
+% En-tête et pied de page
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\textcolor{jupiterBlue}{\textbf{Security Implementation Guide - Jupiter Swap DApp}}}
+\fancyhead[R]{\textcolor{jupiterBlue}{\textbf{Security Guide}}}
+\fancyfoot[C]{\thepage}
+
+\begin{document}
+
+% Page de titre
+\begin{titlepage}
+    \centering
+    \vspace*{1cm}
+    
+    {\Huge\textbf{\textcolor{jupiterBlue}{Security Implementation Guide}}\par}
+    \vspace{0.5cm}
+    {\LARGE\textcolor{deauraPurple}{Jupiter Swap DApp}\par}
+    \vspace{0.3cm}
+    {\Large\textit{Security Guide}\par}
+    
+    \vspace{1.5cm}
+    
+    \begin{tcolorbox}[colback=errorRed!10,colframe=errorRed,width=0.9\textwidth]
+        \centering
+        \textbf{🛡️ Comprehensive Security Implementation}\\
+        \vspace{0.5cm}
+        \begin{multicols}{2}
+        \textbf{Wallet Security:} Multi-provider Support\\
+        \textbf{Transaction Security:} Validation \& Simulation\\
+        \textbf{Input Sanitization:} XSS \& Injection Prevention\\
+        \textbf{API Security:} Rate Limiting \& Authentication\\
+        \textbf{DeFi Security:} MEV \& Slippage Protection\\
+        \textbf{Error Handling:} Secure Error Management\\
+        \textbf{Monitoring:} Real-time Security Alerts\\
+        \textbf{Compliance:} Security Best Practices
+        \end{multicols}
+    \end{tcolorbox}
+    
+    \vspace{1.5cm}
+    
+    \begin{tcolorbox}[colback=successGreen!10,colframe=successGreen,width=0.8\textwidth]
+        \centering
+        \textbf{🔒 Security Highlights}\\
+        \vspace{0.3cm}
+        ✅ Multi-layer Wallet Security\\
+        ✅ Transaction Validation \& Simulation\\
+        ✅ Comprehensive Input Sanitization\\
+        ✅ Advanced Error Handling\\
+        ✅ MEV Protection Strategies\\
+        ✅ Rate Limiting \& DDoS Protection\\
+        ✅ Real-time Security Monitoring\\
+        ✅ OWASP Compliance
+    \end{tcolorbox}
+    
+    \vfill
+    
+    {\large\textbf{Author:} Kamel (\href{https://x.com/treizeb__}{@treizeb\_\_})\\
+    \textbf{Company:} \href{https://deaura.io}{DeAura.io}\\
+    \textbf{Updated:} July 14, 2025\par}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{🔐 Wallet Security Implementation}
+
+\subsection{Multi-Provider Wallet Integration}
+
+\begin{lstlisting}[style=typescript, caption=Secure Wallet Provider Implementation]
+/**
+ * Secure Wallet Provider - Multi-provider Support
+ * Implements comprehensive wallet security patterns
+ */
+export class SecureWalletProvider extends Component<WalletProviderProps> {
+  private readonly logger: Logger;
+  private readonly securityMonitor: SecurityMonitor;
+  private connectionAttempts = new Map<string, number>();
+  private readonly maxConnectionAttempts = 3;
+  private readonly connectionCooldown = 30000; // 30 seconds
+
+  constructor(props: WalletProviderProps) {
+    super(props);
+    this.logger = new Logger('SecureWalletProvider');
+    this.securityMonitor = new SecurityMonitor();
+  }
+
+  /**
+   * Secure wallet connection with validation
+   * @param walletName - Name of wallet to connect
+   * @returns Promise<void>
+   */
+  async connectWallet(walletName: string): Promise<void> {
+    try {
+      // Check connection attempts
+      this.validateConnectionAttempts(walletName);
+
+      // Validate wallet availability
+      await this.validateWalletAvailability(walletName);
+
+      // Perform secure connection
+      const wallet = await this.performSecureConnection(walletName);
+
+      // Validate connected wallet
+      await this.validateConnectedWallet(wallet);
+
+      // Setup security monitoring
+      this.setupWalletMonitoring(wallet);
+
+      this.logger.info('Wallet connected securely', { 
+        walletName,
+        publicKey: wallet.publicKey?.toString() 
+      });
+
+    } catch (error) {
+      this.handleConnectionError(walletName, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Validate connection attempts to prevent brute force
+   */
+  private validateConnectionAttempts(walletName: string): void {
+    const attempts = this.connectionAttempts.get(walletName) || 0;
+    
+    if (attempts >= this.maxConnectionAttempts) {
+      const error = new SecurityError(
+        'Too many connection attempts. Please wait before trying again.',
+        'RATE_LIMITED'
+      );
+      
+      this.securityMonitor.reportSecurityEvent({
+        type: 'WALLET_CONNECTION_RATE_LIMITED',
+        walletName,
+        attempts,
+        timestamp: Date.now(),
+      });
+
+      throw error;
+    }
+  }
+
+  /**
+   * Validate wallet availability and integrity
+   */
+  private async validateWalletAvailability(walletName: string): Promise<void> {
+    const wallet = this.getWalletByName(walletName);
+    
+    if (!wallet) {
+      throw new SecurityError(
+        `Wallet ${walletName} not found or not supported`,
+        'WALLET_NOT_FOUND'
+      );
+    }
+
+    // Check if wallet is properly installed
+    if (!wallet.readyState || wallet.readyState === WalletReadyState.NotDetected) {
+      throw new SecurityError(
+        `Wallet ${walletName} is not installed or not ready`,
+        'WALLET_NOT_READY'
+      );
+    }
+
+    // Validate wallet integrity (check for known malicious modifications)
+    await this.validateWalletIntegrity(wallet);
+  }
+
+  /**
+   * Perform secure wallet connection
+   */
+  private async performSecureConnection(walletName: string): Promise<Wallet> {
+    const wallet = this.getWalletByName(walletName);
+    
+    // Set connection timeout
+    const connectionPromise = wallet.connect();
+    const timeoutPromise = new Promise((_, reject) => 
+      setTimeout(() => reject(new Error('Connection timeout')), 15000)
+    );
+
+    try {
+      await Promise.race([connectionPromise, timeoutPromise]);
+      return wallet;
+    } catch (error) {
+      // Increment connection attempts
+      const attempts = (this.connectionAttempts.get(walletName) || 0) + 1;
+      this.connectionAttempts.set(walletName, attempts);
+
+      // Set cooldown timer
+      setTimeout(() => {
+        this.connectionAttempts.delete(walletName);
+      }, this.connectionCooldown);
+
+      throw error;
+    }
+  }
+
+  /**
+   * Validate connected wallet state
+   */
+  private async validateConnectedWallet(wallet: Wallet): Promise<void> {
+    if (!wallet.connected) {
+      throw new SecurityError('Wallet connection failed', 'CONNECTION_FAILED');
+    }
+
+    if (!wallet.publicKey) {
+      throw new SecurityError('Wallet public key not available', 'NO_PUBLIC_KEY');
+    }
+
+    // Validate public key format
+    try {
+      new PublicKey(wallet.publicKey.toString());
+    } catch {
+      throw new SecurityError('Invalid public key format', 'INVALID_PUBLIC_KEY');
+    }
+
+    // Check for known malicious addresses
+    await this.validatePublicKeyReputation(wallet.publicKey);
+  }
+
+  /**
+   * Setup wallet monitoring for security events
+   */
+  private setupWalletMonitoring(wallet: Wallet): void {
+    // Monitor for unexpected disconnections
+    wallet.on('disconnect', () => {
+      this.securityMonitor.reportSecurityEvent({
+        type: 'WALLET_UNEXPECTED_DISCONNECT',
+        publicKey: wallet.publicKey?.toString(),
+        timestamp: Date.now(),
+      });
+    });
+
+    // Monitor for account changes
+    wallet.on('accountChanged', (publicKey) => {
+      this.securityMonitor.reportSecurityEvent({
+        type: 'WALLET_ACCOUNT_CHANGED',
+        oldPublicKey: wallet.publicKey?.toString(),
+        newPublicKey: publicKey?.toString(),
+        timestamp: Date.now(),
+      });
+    });
+  }
+
+  /**
+   * Validate wallet integrity against known threats
+   */
+  private async validateWalletIntegrity(wallet: Wallet): Promise<void> {
+    // Check wallet version and known vulnerabilities
+    const walletInfo = await this.getWalletInfo(wallet);
+    
+    if (walletInfo.hasKnownVulnerabilities) {
+      this.logger.warn('Wallet has known vulnerabilities', {
+        walletName: wallet.adapter.name,
+        version: walletInfo.version,
+        vulnerabilities: walletInfo.vulnerabilities,
+      });
+
+      // Don't block but warn user
+      this.securityMonitor.reportSecurityEvent({
+        type: 'WALLET_VULNERABILITY_DETECTED',
+        walletName: wallet.adapter.name,
+        vulnerabilities: walletInfo.vulnerabilities,
+        timestamp: Date.now(),
+      });
+    }
+  }
+
+  /**
+   * Validate public key reputation
+   */
+  private async validatePublicKeyReputation(publicKey: PublicKey): Promise<void> {
+    const reputation = await this.checkPublicKeyReputation(publicKey);
+    
+    if (reputation.isBlacklisted) {
+      throw new SecurityError(
+        'This wallet address has been flagged for suspicious activity',
+        'BLACKLISTED_ADDRESS'
+      );
+    }
+
+    if (reputation.riskScore > 0.8) {
+      this.logger.warn('High-risk wallet detected', {
+        publicKey: publicKey.toString(),
+        riskScore: reputation.riskScore,
+        reasons: reputation.riskFactors,
+      });
+
+      this.securityMonitor.reportSecurityEvent({
+        type: 'HIGH_RISK_WALLET_DETECTED',
+        publicKey: publicKey.toString(),
+        riskScore: reputation.riskScore,
+        riskFactors: reputation.riskFactors,
+        timestamp: Date.now(),
+      });
+    }
+  }
+
+  /**
+   * Handle connection errors securely
+   */
+  private handleConnectionError(walletName: string, error: any): void {
+    // Log error without exposing sensitive information
+    this.logger.error('Wallet connection failed', {
+      walletName,
+      errorType: error.constructor.name,
+      errorCode: error.code,
+      // Don't log full error message as it might contain sensitive info
+    });
+
+    // Report security event
+    this.securityMonitor.reportSecurityEvent({
+      type: 'WALLET_CONNECTION_FAILED',
+      walletName,
+      errorType: error.constructor.name,
+      timestamp: Date.now(),
+    });
+  }
+
+  render() {
+    return (
+      <WalletProvider
+        wallets={this.getSecureWallets()}
+        onError={this.handleWalletError}
+        autoConnect={false} // Never auto-connect for security
+      >
+        <WalletModalProvider>
+          {this.props.children}
+        </WalletModalProvider>
+      </WalletProvider>
+    );
+  }
+
+  /**
+   * Get list of secure, validated wallets
+   */
+  private getSecureWallets(): Wallet[] {
+    const supportedWallets = [
+      new PhantomWalletAdapter(),
+      new SolflareWalletAdapter(),
+      new BackpackWalletAdapter(),
+      new GlowWalletAdapter(),
+      new LedgerWalletAdapter(),
+    ];
+
+    // Filter out wallets with known security issues
+    return supportedWallets.filter(wallet => 
+      this.isWalletSecure(wallet)
+    );
+  }
+
+  /**
+   * Check if wallet meets security requirements
+   */
+  private isWalletSecure(wallet: Wallet): boolean {
+    // Check against known insecure wallets
+    const insecureWallets = ['FakeWallet', 'TestWallet'];
+    
+    if (insecureWallets.includes(wallet.adapter.name)) {
+      return false;
+    }
+
+    // Check wallet adapter version
+    if (wallet.adapter.version && this.isVersionVulnerable(wallet.adapter.version)) {
+      return false;
+    }
+
+    return true;
+  }
+}
+\end{lstlisting}
+
+\section{🔒 Transaction Security}
+
+\subsection{Transaction Validation and Simulation}
+
+\begin{lstlisting}[style=typescript, caption=Comprehensive Transaction Security]
+/**
+ * Transaction Security Service
+ * Implements comprehensive transaction validation and security checks
+ */
+export class TransactionSecurityService extends BaseService {
+  private readonly validator: TransactionValidator;
+  private readonly simulator: TransactionSimulator;
+  private readonly riskAnalyzer: RiskAnalyzer;
+  private readonly securityMonitor: SecurityMonitor;
+
+  constructor(
+    logger: Logger,
+    errorHandler: ErrorHandler,
+    connection: Connection,
+    securityMonitor: SecurityMonitor
+  ) {
+    super(logger, errorHandler);
+    this.validator = new TransactionValidator(logger);
+    this.simulator = new TransactionSimulator(connection, logger);
+    this.riskAnalyzer = new RiskAnalyzer(logger);
+    this.securityMonitor = securityMonitor;
+  }
+
+  /**
+   * Validate and secure transaction before signing
+   * @param transaction - Transaction to validate
+   * @param userPublicKey - User's public key
+   * @returns Promise<SecurityValidationResult>
+   */
+  async validateTransaction(
+    transaction: VersionedTransaction,
+    userPublicKey: PublicKey
+  ): Promise<SecurityValidationResult> {
+    this.logger.info('Starting transaction security validation', {
+      userPublicKey: userPublicKey.toString(),
+    });
+
+    const validationResult: SecurityValidationResult = {
+      isValid: false,
+      riskLevel: 'unknown',
+      warnings: [],
+      errors: [],
+      recommendations: [],
+      securityScore: 0,
+    };
+
+    try {
+      // 1. Basic transaction structure validation
+      await this.validateTransactionStructure(transaction, validationResult);
+
+      // 2. Validate transaction instructions
+      await this.validateInstructions(transaction, userPublicKey, validationResult);
+
+      // 3. Simulate transaction execution
+      await this.simulateTransaction(transaction, validationResult);
+
+      // 4. Analyze transaction risk
+      await this.analyzeTransactionRisk(transaction, userPublicKey, validationResult);
+
+      // 5. Check for known attack patterns
+      await this.checkAttackPatterns(transaction, validationResult);
+
+      // 6. Validate transaction limits
+      await this.validateTransactionLimits(transaction, userPublicKey, validationResult);
+
+      // 7. Calculate final security score
+      this.calculateSecurityScore(validationResult);
+
+      // 8. Report security metrics
+      this.reportSecurityMetrics(validationResult);
+
+      return validationResult;
+
+    } catch (error) {
+      this.logger.error('Transaction validation failed', error);
+      validationResult.errors.push('Transaction validation failed');
+      validationResult.isValid = false;
+      return validationResult;
+    }
+  }
+
+  /**
+   * Validate basic transaction structure
+   */
+  private async validateTransactionStructure(
+    transaction: VersionedTransaction,
+    result: SecurityValidationResult
+  ): Promise<void> {
+    // Check transaction version
+    if (transaction.version !== 0) {
+      result.warnings.push('Using versioned transaction - ensure compatibility');
+    }
+
+    // Validate message structure
+    const message = transaction.message;
+    if (!message) {
+      result.errors.push('Transaction message is missing');
+      return;
+    }
+
+    // Check account keys
+    if (!message.staticAccountKeys || message.staticAccountKeys.length === 0) {
+      result.errors.push('No account keys found in transaction');
+      return;
+    }
+
+    // Check instructions
+    if (!message.compiledInstructions || message.compiledInstructions.length === 0) {
+      result.errors.push('No instructions found in transaction');
+      return;
+    }
+
+    // Validate instruction count
+    if (message.compiledInstructions.length > 50) {
+      result.warnings.push('Transaction has many instructions - may fail due to compute limits');
+    }
+
+    // Check for duplicate account keys
+    const accountKeyStrings = message.staticAccountKeys.map(key => key.toString());
+    const uniqueKeys = new Set(accountKeyStrings);
+    if (uniqueKeys.size !== accountKeyStrings.length) {
+      result.warnings.push('Transaction contains duplicate account keys');
+    }
+  }
+
+  /**
+   * Validate transaction instructions for security
+   */
+  private async validateInstructions(
+    transaction: VersionedTransaction,
+    userPublicKey: PublicKey,
+    result: SecurityValidationResult
+  ): Promise<void> {
+    const message = transaction.message;
+    const instructions = message.compiledInstructions;
+
+    for (let i = 0; i < instructions.length; i++) {
+      const instruction = instructions[i];
+      
+      try {
+        // Get program ID
+        const programId = message.staticAccountKeys[instruction.programIdIndex];
+        
+        // Validate against known programs
+        const programValidation = await this.validateProgram(programId);
+        if (!programValidation.isValid) {
+          result.errors.push(`Instruction ${i}: ${programValidation.reason}`);
+          continue;
+        }
+
+        if (programValidation.riskLevel === 'high') {
+          result.warnings.push(`Instruction ${i}: High-risk program detected`);
+        }
+
+        // Validate instruction data
+        await this.validateInstructionData(instruction, programId, result, i);
+
+        // Check for privilege escalation
+        await this.checkPrivilegeEscalation(instruction, userPublicKey, message, result, i);
+
+      } catch (error) {
+        result.warnings.push(`Instruction ${i}: Validation failed - ${error.message}`);
+      }
+    }
+  }
+
+  /**
+   * Simulate transaction to check for failures
+   */
+  private async simulateTransaction(
+    transaction: VersionedTransaction,
+    result: SecurityValidationResult
+  ): Promise<void> {
+    try {
+      const simulationResult = await this.simulator.simulateVersionedTransaction(transaction);
+
+      if (simulationResult.value.err) {
+        result.errors.push(`Transaction simulation failed: ${JSON.stringify(simulationResult.value.err)}`);
+        return;
+      }
+
+      // Check compute units consumed
+      const computeUnits = simulationResult.value.unitsConsumed || 0;
+      if (computeUnits > 1000000) { // 1M compute units
+        result.warnings.push('Transaction consumes high compute units - may be expensive');
+      }
+
+      // Check logs for warnings
+      const logs = simulationResult.value.logs || [];
+      const warningLogs = logs.filter(log => 
+        log.toLowerCase().includes('warning') || 
+        log.toLowerCase().includes('error')
+      );
+
+      if (warningLogs.length > 0) {
+        result.warnings.push('Transaction simulation produced warnings');
+      }
+
+      // Analyze balance changes
+      await this.analyzeBalanceChanges(simulationResult, result);
+
+    } catch (error) {
+      result.warnings.push(`Transaction simulation failed: ${error.message}`);
+    }
+  }
+
+  /**
+   * Analyze transaction risk factors
+   */
+  private async analyzeTransactionRisk(
+    transaction: VersionedTransaction,
+    userPublicKey: PublicKey,
+    result: SecurityValidationResult
+  ): Promise<void> {
+    const riskFactors = await this.riskAnalyzer.analyzeTransaction(
+      transaction,
+      userPublicKey
+    );
+
+    result.riskLevel = riskFactors.overallRisk;
+
+    // Add specific risk warnings
+    if (riskFactors.hasUnknownPrograms) {
+      result.warnings.push('Transaction interacts with unknown programs');
+    }
+
+    if (riskFactors.hasHighValueTransfer) {
+      result.warnings.push('Transaction involves high-value transfers');
+    }
+
+    if (riskFactors.hasComplexInstructions) {
+      result.warnings.push('Transaction has complex instruction patterns');
+    }
+
+    if (riskFactors.interactsWithSuspiciousAccounts) {
+      result.errors.push('Transaction interacts with flagged accounts');
+    }
+
+    // Add recommendations based on risk
+    if (riskFactors.overallRisk === 'high') {
+      result.recommendations.push('Consider reviewing transaction details carefully');
+      result.recommendations.push('Verify all recipient addresses');
+    }
+  }
+
+  /**
+   * Check for known attack patterns
+   */
+  private async checkAttackPatterns(
+    transaction: VersionedTransaction,
+    result: SecurityValidationResult
+  ): Promise<void> {
+    const patterns = [
+      this.checkDrainAttack(transaction),
+      this.checkPhishingPattern(transaction),
+      this.checkMEVAttack(transaction),
+      this.checkReentrancyPattern(transaction),
+    ];
+
+    const detectedPatterns = await Promise.all(patterns);
+    
+    for (const pattern of detectedPatterns) {
+      if (pattern.detected) {
+        if (pattern.severity === 'critical') {
+          result.errors.push(`Critical security threat detected: ${pattern.description}`);
+        } else {
+          result.warnings.push(`Potential security issue: ${pattern.description}`);
+        }
+      }
+    }
+  }
+
+  /**
+   * Validate transaction limits
+   */
+  private async validateTransactionLimits(
+    transaction: VersionedTransaction,
+    userPublicKey: PublicKey,
+    result: SecurityValidationResult
+  ): Promise<void> {
+    // Check transaction size
+    const serializedSize = transaction.serialize().length;
+    if (serializedSize > 1232) { // Solana transaction size limit
+      result.errors.push('Transaction exceeds maximum size limit');
+    }
+
+    // Check daily transaction limits (if implemented)
+    const dailyLimits = await this.checkDailyLimits(userPublicKey);
+    if (dailyLimits.exceeded) {
+      result.warnings.push('Daily transaction limits may be exceeded');
+    }
+
+    // Check for rapid transaction patterns
+    const rapidPattern = await this.checkRapidTransactions(userPublicKey);
+    if (rapidPattern.detected) {
+      result.warnings.push('Rapid transaction pattern detected - possible automation');
+    }
+  }
+
+  /**
+   * Calculate overall security score
+   */
+  private calculateSecurityScore(result: SecurityValidationResult): void {
+    let score = 100;
+
+    // Deduct points for errors and warnings
+    score -= result.errors.length * 25;
+    score -= result.warnings.length * 10;
+
+    // Adjust based on risk level
+    switch (result.riskLevel) {
+      case 'critical':
+        score -= 50;
+        break;
+      case 'high':
+        score -= 30;
+        break;
+      case 'medium':
+        score -= 15;
+        break;
+      case 'low':
+        score -= 5;
+        break;
+    }
+
+    result.securityScore = Math.max(0, score);
+    result.isValid = result.errors.length === 0 && score >= 50;
+  }
+
+  /**
+   * Report security metrics
+   */
+  private reportSecurityMetrics(result: SecurityValidationResult): void {
+    this.securityMonitor.reportSecurityEvent({
+      type: 'TRANSACTION_VALIDATION_COMPLETED',
+      isValid: result.isValid,
+      riskLevel: result.riskLevel,
+      securityScore: result.securityScore,
+      errorCount: result.errors.length,
+      warningCount: result.warnings.length,
+      timestamp: Date.now(),
+    });
+  }
+
+  /**
+   * Validate program against known programs
+   */
+  private async validateProgram(programId: PublicKey): Promise<ProgramValidation> {
+    const programIdString = programId.toString();
+
+    // Known safe programs
+    const safePrograms = new Set([
+      '11111111111111111111111111111111', // System Program
+      'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', // Token Program
+      'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL', // Associated Token Program
+      'JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4', // Jupiter V6
+      'JUP4Fb2cqiRUcaTHdrPC8h2gNsA2ETXiPDD33WcGuJB', // Jupiter V4
+    ]);
+
+    if (safePrograms.has(programIdString)) {
+      return {
+        isValid: true,
+        riskLevel: 'low',
+        reason: 'Known safe program',
+      };
+    }
+
+    // Known risky programs (example)
+    const riskyPrograms = new Set([
+      // Add known risky program IDs here
+    ]);
+
+    if (riskyPrograms.has(programIdString)) {
+      return {
+        isValid: false,
+        riskLevel: 'high',
+        reason: 'Known risky program',
+      };
+    }
+
+    // Unknown program - medium risk
+    return {
+      isValid: true,
+      riskLevel: 'medium',
+      reason: 'Unknown program - proceed with caution',
+    };
+  }
+
+  /**
+   * Check for drain attack patterns
+   */
+  private async checkDrainAttack(transaction: VersionedTransaction): Promise<AttackPattern> {
+    // Look for patterns that drain all tokens from an account
+    const message = transaction.message;
+    const instructions = message.compiledInstructions;
+
+    let suspiciousTransferCount = 0;
+    let totalValueTransferred = 0;
+
+    for (const instruction of instructions) {
+      const programId = message.staticAccountKeys[instruction.programIdIndex];
+      
+      // Check for token transfer instructions
+      if (programId.toString() === 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') {
+        // Parse token transfer instruction
+        const transferData = this.parseTokenTransferInstruction(instruction);
+        if (transferData) {
+          suspiciousTransferCount++;
+          totalValueTransferred += transferData.amount;
+        }
+      }
+    }
+
+    const detected = suspiciousTransferCount > 10 || totalValueTransferred > 1000000; // 1M tokens
+
+    return {
+      detected,
+      severity: detected ? 'critical' : 'low',
+      description: detected ? 'Potential drain attack detected' : 'No drain attack pattern',
+      confidence: detected ? 0.8 : 0.1,
+    };
+  }
+
+  /**
+   * Parse token transfer instruction data
+   */
+  private parseTokenTransferInstruction(instruction: any): { amount: number } | null {
+    try {
+      // This is a simplified parser - in reality, you'd use proper instruction parsing
+      const data = instruction.data;
+      if (data && data.length >= 9) {
+        // Token transfer instruction has specific format
+        const amount = data.readBigUInt64LE(1);
+        return { amount: Number(amount) };
+      }
+    } catch (error) {
+      // Ignore parsing errors
+    }
+    return null;
+  }
+}
+\end{lstlisting}
+
+\section{🛡️ Input Sanitization}
+
+\subsection{XSS and Injection Prevention}
+
+\begin{lstlisting}[style=typescript, caption=Comprehensive Input Sanitization]
+/**
+ * Input Sanitization Service
+ * Prevents XSS, injection attacks, and validates all user inputs
+ */
+export class InputSanitizationService {
+  private readonly logger: Logger;
+  private readonly validator: Validator;
+
+  constructor(logger: Logger) {
+    this.logger = logger;
+    this.validator = new Validator();
+  }
+
+  /**
+   * Sanitize and validate token amount input
+   * @param input - Raw input string
+   * @returns SanitizedInput<number>
+   */
+  sanitizeTokenAmount(input: string): SanitizedInput<number> {
+    const result: SanitizedInput<number> = {
+      isValid: false,
+      sanitizedValue: 0,
+      originalValue: input,
+      errors: [],
+      warnings: [],
+    };
+
+    try {
+      // Remove any HTML tags
+      const htmlCleaned = this.stripHtmlTags(input);
+      
+      // Remove any script-like content
+      const scriptCleaned = this.removeScriptContent(htmlCleaned);
+      
+      // Validate numeric format
+      const numericValidation = this.validateNumericInput(scriptCleaned);
+      if (!numericValidation.isValid) {
+        result.errors.push(...numericValidation.errors);
+        return result;
+      }
+
+      const numericValue = parseFloat(scriptCleaned);
+
+      // Validate range
+      if (numericValue < 0) {
+        result.errors.push('Amount cannot be negative');
+        return result;
+      }
+
+      if (numericValue > Number.MAX_SAFE_INTEGER) {
+        result.errors.push('Amount exceeds maximum safe value');
+        return result;
+      }
+
+      // Check for reasonable decimal places
+      const decimalPlaces = this.countDecimalPlaces(scriptCleaned);
+      if (decimalPlaces > 18) {
+        result.warnings.push('Amount has many decimal places - may cause precision issues');
+      }
+
+      result.isValid = true;
+      result.sanitizedValue = numericValue;
+
+    } catch (error) {
+      result.errors.push('Invalid amount format');
+      this.logger.warn('Token amount sanitization failed', { input, error });
+    }
+
+    return result;
+  }
+
+  /**
+   * Sanitize and validate public key input
+   * @param input - Raw input string
+   * @returns SanitizedInput<PublicKey>
+   */
+  sanitizePublicKey(input: string): SanitizedInput<PublicKey> {
+    const result: SanitizedInput<PublicKey> = {
+      isValid: false,
+      sanitizedValue: null,
+      originalValue: input,
+      errors: [],
+      warnings: [],
+    };
+
+    try {
+      // Remove whitespace and control characters
+      const cleaned = input.trim().replace(/[\x00-\x1F\x7F]/g, '');
+      
+      // Remove HTML tags
+      const htmlCleaned = this.stripHtmlTags(cleaned);
+      
+      // Validate base58 format
+      if (!this.isValidBase58(htmlCleaned)) {
+        result.errors.push('Invalid public key format');
+        return result;
+      }
+
+      // Validate length
+      if (htmlCleaned.length !== 44) {
+        result.errors.push('Public key must be 44 characters long');
+        return result;
+      }
+
+      // Try to create PublicKey object
+      const publicKey = new PublicKey(htmlCleaned);
+      
+      // Additional validation
+      if (publicKey.toString() !== htmlCleaned) {
+        result.errors.push('Public key validation failed');
+        return result;
+      }
+
+      // Check against known invalid keys
+      if (this.isKnownInvalidKey(publicKey)) {
+        result.errors.push('Invalid or blacklisted public key');
+        return result;
+      }
+
+      result.isValid = true;
+      result.sanitizedValue = publicKey;
+
+    } catch (error) {
+      result.errors.push('Invalid public key format');
+      this.logger.warn('Public key sanitization failed', { input, error });
+    }
+
+    return result;
+  }
+
+  /**
+   * Sanitize search query input
+   * @param input - Raw search query
+   * @returns SanitizedInput<string>
+   */
+  sanitizeSearchQuery(input: string): SanitizedInput<string> {
+    const result: SanitizedInput<string> = {
+      isValid: false,
+      sanitizedValue: '',
+      originalValue: input,
+      errors: [],
+      warnings: [],
+    };
+
+    try {
+      // Remove control characters
+      let cleaned = input.replace(/[\x00-\x1F\x7F]/g, '');
+      
+      // Remove HTML tags
+      cleaned = this.stripHtmlTags(cleaned);
+      
+      // Remove script content
+      cleaned = this.removeScriptContent(cleaned);
+      
+      // Remove SQL injection patterns
+      cleaned = this.removeSqlInjectionPatterns(cleaned);
+      
+      // Limit length
+      if (cleaned.length > 100) {
+        cleaned = cleaned.substring(0, 100);
+        result.warnings.push('Search query truncated to 100 characters');
+      }
+
+      // Validate minimum length
+      if (cleaned.trim().length < 1) {
+        result.errors.push('Search query cannot be empty');
+        return result;
+      }
+
+      // Check for suspicious patterns
+      if (this.containsSuspiciousPatterns(cleaned)) {
+        result.warnings.push('Search query contains suspicious patterns');
+      }
+
+      result.isValid = true;
+      result.sanitizedValue = cleaned.trim();
+
+    } catch (error) {
+      result.errors.push('Search query validation failed');
+      this.logger.warn('Search query sanitization failed', { input, error });
+    }
+
+    return result;
+  }
+
+  /**
+   * Sanitize URL input
+   * @param input - Raw URL string
+   * @returns SanitizedInput<string>
+   */
+  sanitizeUrl(input: string): SanitizedInput<string> {
+    const result: SanitizedInput<string> = {
+      isValid: false,
+      sanitizedValue: '',
+      originalValue: input,
+      errors: [],
+      warnings: [],
+    };
+
+    try {
+      // Remove control characters
+      let cleaned = input.replace(/[\x00-\x1F\x7F]/g, '');
+      
+      // Remove HTML tags
+      cleaned = this.stripHtmlTags(cleaned);
+      
+      // Validate URL format
+      const url = new URL(cleaned);
+      
+      // Check protocol
+      if (!['http:', 'https:'].includes(url.protocol)) {
+        result.errors.push('Only HTTP and HTTPS URLs are allowed');
+        return result;
+      }
+
+      // Check for suspicious domains
+      if (this.isSuspiciousDomain(url.hostname)) {
+        result.errors.push('Suspicious or blacklisted domain');
+        return result;
+      }
+
+      // Check for URL shorteners (potential security risk)
+      if (this.isUrlShortener(url.hostname)) {
+        result.warnings.push('URL shortener detected - verify destination');
+      }
+
+      result.isValid = true;
+      result.sanitizedValue = url.toString();
+
+    } catch (error) {
+      result.errors.push('Invalid URL format');
+      this.logger.warn('URL sanitization failed', { input, error });
+    }
+
+    return result;
+  }
+
+  /**
+   * Strip HTML tags from input
+   */
+  private stripHtmlTags(input: string): string {
+    return input.replace(/<[^>]*>/g, '');
+  }
+
+  /**
+   * Remove script content and dangerous patterns
+   */
+  private removeScriptContent(input: string): string {
+    // Remove script tags and content
+    let cleaned = input.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+    
+    // Remove javascript: URLs
+    cleaned = cleaned.replace(/javascript:/gi, '');
+    
+    // Remove on* event handlers
+    cleaned = cleaned.replace(/\bon\w+\s*=/gi, '');
+    
+    // Remove data: URLs (can contain scripts)
+    cleaned = cleaned.replace(/data:/gi, '');
+    
+    return cleaned;
+  }
+
+  /**
+   * Remove SQL injection patterns
+   */
+  private removeSqlInjectionPatterns(input: string): string {
+    const sqlPatterns = [
+      /(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION)\b)/gi,
+      /(--|\/\*|\*\/)/g,
+      /(\b(OR|AND)\s+\d+\s*=\s*\d+)/gi,
+      /('|(\\')|(;))/g,
+    ];
+
+    let cleaned = input;
+    for (const pattern of sqlPatterns) {
+      cleaned = cleaned.replace(pattern, '');
+    }
+
+    return cleaned;
+  }
+
+  /**
+   * Validate numeric input format
+   */
+  private validateNumericInput(input: string): ValidationResult {
+    const result: ValidationResult = {
+      isValid: true,
+      errors: [],
+    };
+
+    // Check for valid numeric format
+    if (!/^-?\d*\.?\d+([eE][+-]?\d+)?$/.test(input)) {
+      result.isValid = false;
+      result.errors.push('Invalid numeric format');
+    }
+
+    // Check for scientific notation abuse
+    if (/[eE]/.test(input)) {
+      const parts = input.split(/[eE]/);
+      if (parts.length === 2) {
+        const exponent = parseInt(parts[1]);
+        if (Math.abs(exponent) > 20) {
+          result.isValid = false;
+          result.errors.push('Exponent too large');
+        }
+      }
+    }
+
+    return result;
+  }
+
+  /**
+   * Count decimal places in numeric string
+   */
+  private countDecimalPlaces(input: string): number {
+    const decimalIndex = input.indexOf('.');
+    if (decimalIndex === -1) return 0;
+    
+    const afterDecimal = input.substring(decimalIndex + 1);
+    return afterDecimal.replace(/[eE].*$/, '').length;
+  }
+
+  /**
+   * Validate base58 format
+   */
+  private isValidBase58(input: string): boolean {
+    const base58Regex = /^[1-9A-HJ-NP-Za-km-z]+$/;
+    return base58Regex.test(input);
+  }
+
+  /**
+   * Check if public key is known to be invalid
+   */
+  private isKnownInvalidKey(publicKey: PublicKey): boolean {
+    const invalidKeys = new Set([
+      '11111111111111111111111111111111', // System Program (not a wallet)
+      '00000000000000000000000000000000', // Invalid key
+    ]);
+
+    return invalidKeys.has(publicKey.toString());
+  }
+
+  /**
+   * Check for suspicious patterns in text
+   */
+  private containsSuspiciousPatterns(input: string): boolean {
+    const suspiciousPatterns = [
+      /<script/i,
+      /javascript:/i,
+      /vbscript:/i,
+      /onload=/i,
+      /onerror=/i,
+      /eval\(/i,
+      /document\.cookie/i,
+      /window\.location/i,
+    ];
+
+    return suspiciousPatterns.some(pattern => pattern.test(input));
+  }
+
+  /**
+   * Check if domain is suspicious
+   */
+  private isSuspiciousDomain(hostname: string): boolean {
+    const suspiciousDomains = new Set([
+      'localhost',
+      '127.0.0.1',
+      '0.0.0.0',
+      // Add known malicious domains
+    ]);
+
+    // Check for suspicious TLDs
+    const suspiciousTlds = ['.tk', '.ml', '.ga', '.cf'];
+    const hasSuspiciousTld = suspiciousTlds.some(tld => hostname.endsWith(tld));
+
+    return suspiciousDomains.has(hostname) || hasSuspiciousTld;
+  }
+
+  /**
+   * Check if domain is a URL shortener
+   */
+  private isUrlShortener(hostname: string): boolean {
+    const shorteners = new Set([
+      'bit.ly',
+      'tinyurl.com',
+      't.co',
+      'goo.gl',
+      'ow.ly',
+      'short.link',
+    ]);
+
+    return shorteners.has(hostname);
+  }
+}
+\end{lstlisting}
+
+\section{📊 Security Monitoring}
+
+\subsection{Real-time Security Event Monitoring}
+
+\begin{lstlisting}[style=typescript, caption=Security Monitoring System]
+/**
+ * Security Monitor - Real-time Security Event Tracking
+ * Monitors and responds to security events in real-time
+ */
+export class SecurityMonitor {
+  private readonly logger: Logger;
+  private readonly eventStore: SecurityEventStore;
+  private readonly alertManager: AlertManager;
+  private readonly metrics: SecurityMetrics;
+  private readonly riskThresholds: RiskThresholds;
+
+  constructor(
+    logger: Logger,
+    eventStore: SecurityEventStore,
+    alertManager: AlertManager
+  ) {
+    this.logger = logger;
+    this.eventStore = eventStore;
+    this.alertManager = alertManager;
+    this.metrics = new SecurityMetrics();
+    this.riskThresholds = this.loadRiskThresholds();
+  }
+
+  /**
+   * Report a security event
+   * @param event - Security event to report
+   */
+  async reportSecurityEvent(event: SecurityEvent): Promise<void> {
+    try {
+      // Enrich event with additional context
+      const enrichedEvent = await this.enrichSecurityEvent(event);
+
+      // Store event
+      await this.eventStore.store(enrichedEvent);
+
+      // Update metrics
+      this.metrics.recordEvent(enrichedEvent);
+
+      // Check for immediate threats
+      const threatLevel = await this.assessThreatLevel(enrichedEvent);
+      
+      if (threatLevel >= this.riskThresholds.immediateResponse) {
+        await this.handleImmediateThreat(enrichedEvent);
+      }
+
+      // Check for patterns
+      await this.checkSecurityPatterns(enrichedEvent);
+
+      this.logger.info('Security event reported', {
+        type: event.type,
+        threatLevel,
+        timestamp: event.timestamp,
+      });
+
+    } catch (error) {
+      this.logger.error('Failed to report security event', error);
+    }
+  }
+
+  /**
+   * Get security dashboard data
+   * @param timeRange - Time range for data
+   * @returns Promise<SecurityDashboard>
+   */
+  async getSecurityDashboard(timeRange: TimeRange): Promise<SecurityDashboard> {
+    const events = await this.eventStore.getEvents(timeRange);
+    
+    return {
+      totalEvents: events.length,
+      eventsByType: this.groupEventsByType(events),
+      threatLevelDistribution: this.analyzeThreatLevels(events),
+      topRisks: await this.identifyTopRisks(events),
+      securityScore: this.calculateSecurityScore(events),
+      recommendations: await this.generateRecommendations(events),
+      alerts: await this.getActiveAlerts(),
+      trends: this.analyzeTrends(events),
+    };
+  }
+
+  /**
+   * Check for security anomalies
+   * @param userPublicKey - User to check
+   * @returns Promise<AnomalyReport>
+   */
+  async checkUserAnomalies(userPublicKey: PublicKey): Promise<AnomalyReport> {
+    const userEvents = await this.eventStore.getUserEvents(
+      userPublicKey.toString(),
+      { hours: 24 } // Last 24 hours
+    );
+
+    const anomalies: SecurityAnomaly[] = [];
+
+    // Check for unusual activity patterns
+    const activityAnomaly = this.detectActivityAnomaly(userEvents);
+    if (activityAnomaly) {
+      anomalies.push(activityAnomaly);
+    }
+
+    // Check for suspicious transaction patterns
+    const transactionAnomaly = this.detectTransactionAnomaly(userEvents);
+    if (transactionAnomaly) {
+      anomalies.push(transactionAnomaly);
+    }
+
+    // Check for failed authentication attempts
+    const authAnomaly = this.detectAuthenticationAnomaly(userEvents);
+    if (authAnomaly) {
+      anomalies.push(authAnomaly);
+    }
+
+    return {
+      userPublicKey: userPublicKey.toString(),
+      anomaliesDetected: anomalies.length,
+      anomalies,
+      riskScore: this.calculateUserRiskScore(anomalies),
+      recommendations: this.generateUserRecommendations(anomalies),
+    };
+  }
+
+  /**
+   * Enrich security event with additional context
+   */
+  private async enrichSecurityEvent(event: SecurityEvent): Promise<EnrichedSecurityEvent> {
+    const enriched: EnrichedSecurityEvent = {
+      ...event,
+      id: this.generateEventId(),
+      ipAddress: await this.getClientIpAddress(),
+      userAgent: await this.getUserAgent(),
+      geolocation: await this.getGeolocation(),
+      sessionId: await this.getSessionId(),
+      enrichedAt: Date.now(),
+    };
+
+    // Add threat intelligence
+    if (event.publicKey) {
+      enriched.threatIntelligence = await this.getThreatIntelligence(event.publicKey);
+    }
+
+    return enriched;
+  }
+
+  /**
+   * Assess threat level of security event
+   */
+  private async assessThreatLevel(event: EnrichedSecurityEvent): Promise<number> {
+    let threatLevel = 0;
+
+    // Base threat level by event type
+    const baseThreatLevels: Record<string, number> = {
+      'WALLET_CONNECTION_FAILED': 2,
+      'TRANSACTION_VALIDATION_FAILED': 5,
+      'HIGH_RISK_WALLET_DETECTED': 7,
+      'BLACKLISTED_ADDRESS': 10,
+      'DRAIN_ATTACK_DETECTED': 10,
+      'SUSPICIOUS_PATTERN_DETECTED': 6,
+      'RATE_LIMITED': 3,
+    };
+
+    threatLevel = baseThreatLevels[event.type] || 1;
+
+    // Increase threat level based on frequency
+    const recentSimilarEvents = await this.eventStore.getRecentSimilarEvents(
+      event,
+      { minutes: 10 }
+    );
+
+    if (recentSimilarEvents.length > 5) {
+      threatLevel += 3;
+    }
+
+    // Increase threat level for known bad actors
+    if (event.threatIntelligence?.isKnownBadActor) {
+      threatLevel += 5;
+    }
+
+    return Math.min(threatLevel, 10); // Cap at 10
+  }
+
+  /**
+   * Handle immediate security threats
+   */
+  private async handleImmediateThreat(event: EnrichedSecurityEvent): Promise<void> {
+    this.logger.warn('Immediate security threat detected', {
+      eventType: event.type,
+      eventId: event.id,
+    });
+
+    // Send immediate alert
+    await this.alertManager.sendImmediateAlert({
+      severity: 'critical',
+      title: 'Immediate Security Threat Detected',
+      description: `Security event: ${event.type}`,
+      event,
+      timestamp: Date.now(),
+    });
+
+    // Take protective actions
+    if (event.publicKey) {
+      await this.implementProtectiveActions(event.publicKey);
+    }
+  }
+
+  /**
+   * Check for security patterns and correlations
+   */
+  private async checkSecurityPatterns(event: EnrichedSecurityEvent): Promise<void> {
+    // Check for coordinated attacks
+    const coordinatedAttack = await this.detectCoordinatedAttack(event);
+    if (coordinatedAttack) {
+      await this.reportSecurityEvent({
+        type: 'COORDINATED_ATTACK_DETECTED',
+        description: 'Multiple related security events detected',
+        relatedEvents: coordinatedAttack.relatedEvents,
+        timestamp: Date.now(),
+      });
+    }
+
+    // Check for escalating threats
+    const escalatingThreat = await this.detectEscalatingThreat(event);
+    if (escalatingThreat) {
+      await this.reportSecurityEvent({
+        type: 'ESCALATING_THREAT_DETECTED',
+        description: 'Security threat is escalating',
+        escalationPattern: escalatingThreat.pattern,
+        timestamp: Date.now(),
+      });
+    }
+  }
+
+  /**
+   * Detect activity anomalies
+   */
+  private detectActivityAnomaly(events: SecurityEvent[]): SecurityAnomaly | null {
+    const activityEvents = events.filter(e => 
+      ['WALLET_CONNECTION', 'TRANSACTION_SUBMITTED'].includes(e.type)
+    );
+
+    // Check for unusual activity volume
+    const hourlyActivity = this.groupEventsByHour(activityEvents);
+    const avgHourlyActivity = Object.values(hourlyActivity).reduce((a, b) => a + b, 0) / 24;
+    
+    const maxHourlyActivity = Math.max(...Object.values(hourlyActivity));
+    
+    if (maxHourlyActivity > avgHourlyActivity * 5) {
+      return {
+        type: 'UNUSUAL_ACTIVITY_VOLUME',
+        severity: 'medium',
+        description: 'Unusual spike in activity detected',
+        confidence: 0.8,
+        details: {
+          maxHourlyActivity,
+          avgHourlyActivity,
+          threshold: avgHourlyActivity * 5,
+        },
+      };
+    }
+
+    return null;
+  }
+
+  /**
+   * Generate security recommendations
+   */
+  private async generateRecommendations(events: SecurityEvent[]): Promise<SecurityRecommendation[]> {
+    const recommendations: SecurityRecommendation[] = [];
+
+    // Analyze event patterns
+    const eventTypes = this.groupEventsByType(events);
+
+    // High number of failed connections
+    if (eventTypes['WALLET_CONNECTION_FAILED'] > 10) {
+      recommendations.push({
+        type: 'SECURITY_IMPROVEMENT',
+        priority: 'high',
+        title: 'Review Wallet Connection Security',
+        description: 'High number of failed wallet connections detected',
+        action: 'Implement additional connection validation',
+      });
+    }
+
+    // High-risk transactions
+    if (eventTypes['HIGH_RISK_TRANSACTION'] > 5) {
+      recommendations.push({
+        type: 'USER_EDUCATION',
+        priority: 'medium',
+        title: 'User Education on Transaction Security',
+        description: 'Users are submitting high-risk transactions',
+        action: 'Provide better transaction security guidance',
+      });
+    }
+
+    return recommendations;
+  }
+
+  /**
+   * Calculate overall security score
+   */
+  private calculateSecurityScore(events: SecurityEvent[]): number {
+    let score = 100;
+
+    const eventTypes = this.groupEventsByType(events);
+
+    // Deduct points for security events
+    score -= (eventTypes['SECURITY_VIOLATION'] || 0) * 10;
+    score -= (eventTypes['HIGH_RISK_TRANSACTION'] || 0) * 5;
+    score -= (eventTypes['FAILED_VALIDATION'] || 0) * 3;
+
+    // Bonus points for good security practices
+    score += (eventTypes['SUCCESSFUL_VALIDATION'] || 0) * 0.1;
+
+    return Math.max(0, Math.min(100, score));
+  }
+
+  /**
+   * Load risk thresholds configuration
+   */
+  private loadRiskThresholds(): RiskThresholds {
+    return {
+      immediateResponse: 8,
+      highAlert: 6,
+      mediumAlert: 4,
+      lowAlert: 2,
+    };
+  }
+}
+\end{lstlisting}
+
+\section{🎯 Conclusion}
+
+This comprehensive security implementation guide provides detailed patterns and practices for securing the Jupiter Swap DApp against common threats and vulnerabilities.
+
+\subsection{Security Implementation Summary}
+
+\begin{tcolorbox}[colback=successGreen!10,colframe=successGreen]
+\textbf{🛡️ Security Features Implemented:}
+\begin{itemize}
+    \item \textbf{Multi-layer Wallet Security:} Connection validation and monitoring
+    \item \textbf{Transaction Security:} Comprehensive validation and simulation
+    \item \textbf{Input Sanitization:} XSS and injection prevention
+    \item \textbf{Real-time Monitoring:} Security event tracking and alerting
+    \item \textbf{Risk Assessment:} Automated threat level calculation
+    \item \textbf{Attack Prevention:} Pattern detection and response
+    \item \textbf{Compliance:} OWASP security standards
+    \item \textbf{Incident Response:} Automated protective actions
+\end{itemize}
+\end{tcolorbox}
+
+\vspace{1cm}
+
+\begin{center}
+\textit{Security implementation designed and implemented by Kamel (\href{https://x.com/treizeb__}{@treizeb\_\_})\\
+DeAura.io - July 2025}
+\end{center}
+
+\end{document}
+
